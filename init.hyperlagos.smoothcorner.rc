@@ -1,0 +1,38 @@
+service smoothcornerd /system_ext/bin/smoothcornerd
+    class main
+    user root
+    group root system
+    seclabel u:r:init:s0
+
+on load_persist_props_action
+    setprop persist.sys.support_view_smoothcorner true
+    setprop persist.sys.support_window_smoothcorner true
+    setprop persist.sys.background_blur_supported true
+    setprop persist.sys.background_blur_status_default false
+    setprop persist.sys.bionic_material_supported true
+
+on post-fs-data
+    setprop persist.sys.support_view_smoothcorner true
+    setprop persist.sys.support_window_smoothcorner true
+    setprop persist.sys.background_blur_supported true
+    setprop persist.sys.background_blur_status_default false
+    setprop persist.sys.bionic_material_supported true
+
+on property:sys.boot_completed=1
+    setprop persist.sys.support_view_smoothcorner true
+    setprop persist.sys.support_window_smoothcorner true
+    setprop persist.sys.background_blur_supported true
+    setprop persist.sys.background_blur_status_default false
+    setprop persist.sys.bionic_material_supported true
+
+on property:persist.sys.support_view_smoothcorner=false
+    setprop persist.sys.support_view_smoothcorner true
+
+on property:persist.sys.support_window_smoothcorner=false
+    setprop persist.sys.support_window_smoothcorner true
+
+on property:persist.sys.support_view_smoothcorner=0
+    setprop persist.sys.support_view_smoothcorner true
+
+on property:persist.sys.support_window_smoothcorner=0
+    setprop persist.sys.support_window_smoothcorner true

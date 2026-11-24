@@ -1,0 +1,38 @@
+name: Build smoothcornerd
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Build
+        run: |
+          NDK="${ANDROID_NDK_LATEST_HOME:-$ANDROID_NDK_HOME}"
+          BIN="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$BIN/aarch64-linux-android31-clang"
+          export CC_aarch64_linux_android="$BIN/aarch64-linux-android31-clang"
+          cargo build --release --target aarch64-linux-android
+
+      - name: Package
+        run: |
+          mkdir -p out/system_ext/bin out/system_ext/etc/init
+          cp target/aarch64-linux-android/release/smoothcornerd out/system_ext/bin/
+          cp init.hyperlagos.smoothcorner.rc out/system_ext/etc/init/
+          cp push.sh out/
+          chmod 0755 out/system_ext/bin/smoothcornerd out/push.sh
+          chmod 0644 out/system_ext/etc/init/init.hyperlagos.smoothcorner.rc
+          cd out && zip -r ../smoothcornerd.zip .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smoothcornerd
+          path: smoothcornerd.zip
